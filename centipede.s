@@ -2,7 +2,7 @@
 #
 # CSC258H Winter 2021 Assembly Final Project # University of Toronto, St. George
 #
-# Student: Name, Student Number
+# Student: Tianhe Zhang, 1004962533
 #
 # Bitmap Display Configuration:
 # - Unit width in pixels: 8
@@ -13,7 +13,7 @@
 #
 # Which milestone is reached in this submission?
 # (See the project handout for descriptions of the milestones)
-# - Milestone 1/2/3/4/5 (choose the one the applies)
+# - Milestone 1
 #
 # Which approved additional features have been implemented?
 # (See the project handout for the list of additional features)
