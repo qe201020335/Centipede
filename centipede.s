@@ -32,16 +32,24 @@
     bugLocation: .word 814  # initial position of the bug
     centipedLocation: .word 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
     centipedDirection: .word 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+    mushroomLocation: .word 31, 69, 80, 451, 731, 756, 761, 760, 955, 962  # some random initial location of mashroom
+
 
     bgColor: .word 0x00000000  # black
     centipedColor: .word 0x00ff0000  # red
     bugColor: .word 0x00ffffff  # white
+    mushroomColor: .word 0x00f600ff  # pink
+    dartColor: .word 0x00afafaf  # grey
 
     sleep: .word 200  # delay for each game loop iteration
 
 .text 
 Loop:
+    jal clear_screen
+
     jal disp_centiped
+
+
     jal check_keystroke
 
 
@@ -54,6 +62,42 @@ Exit:
     syscall
 
 
+
+
+# function to clear the screen for a new iteration of the game
+clear_screen:
+    # move stack pointer a work and push ra onto it
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+    
+    addi $a3, $zero, 1024	 # load a3 with the loop count (10)
+    la $a1, mushroomLocation # load the address of the array into $a1
+
+    clear_screen_loop:  # loop over the whole screen and draw every pixel with bgColor
+        blt $a3, $zero, clear_screen_loop_end
+        la $t1, bgColor  # store the address of the bgColor
+        lw $t1, ($t1)   # now $t1 is the bgColor
+
+        lw $t2, displayAddress  # $t2 stores the base address for display
+
+        sll $t4, $a3, 2		# $t4 is arrdress offset of the current pixel at $a3
+        add $t4, $t2, $t4	# now $t4 is the address of the current pixel
+        sw $t1, 0($t4)		# paint this pixel with bgColor
+        addi $a3, $a3, -1	 # decrement $a3 by 1
+        j clear_screen_loop
+    clear_screen_loop_end:
+    
+    # pop a word off the stack and move the stack pointer
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    
+    jr $ra
+
+
+
+
+
+
 # function to display a static centiped	
 disp_centiped:
     # move stack pointer a work and push ra onto it
@@ -64,28 +108,74 @@ disp_centiped:
     la $a1, centipedLocation # load the address of the array into $a1
     la $a2, centipedDirection # load the address of the array into $a2
 
-arr_loop:	#iterate over the loops elements to draw each body in the centiped
-    lw $t1, 0($a1)		 # load a word from the centipedLocation array into $t1
-    lw $t5, 0($a2)		 # load a word from the centipedDirection  array into $t5
-    #####
-    lw $t2, displayAddress  # $t2 stores the base address for display
-    li $t3, 0xff0000	# $t3 stores the red colour code
+    arr_loop:	#iterate over the loops elements to draw each body in the centiped
+        lw $t1, 0($a1)		 # load a word from the centipedLocation array into $t1
+        lw $t5, 0($a2)		 # load a word from the centipedDirection  array into $t5
+        #####
+        lw $t2, displayAddress  # $t2 stores the base address for display
+        li $t3, 0xff0000	# $t3 stores the red colour code
+        
+        sll $t4,$t1, 2		# $t4 is the bias of the old body location in memory (offset*4)
+        add $t4, $t2, $t4	# $t4 is the address of the old bug location
+        sw $t3, 0($t4)		# paint the body with red
+        
+        
+        addi $a1, $a1, 4	 # increment $a1 by one, to point to the next element in the array
+        addi $a2, $a2, 4
+        addi $a3, $a3, -1	 # decrement $a3 by 1
+        bne $a3, $zero, arr_loop
+        
+    # pop a word off the stack and move the stack pointer
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
     
-    sll $t4,$t1, 2		# $t4 is the bias of the old body location in memory (offset*4)
-    add $t4, $t2, $t4	# $t4 is the address of the old bug location
-    sw $t3, 0($t4)		# paint the body with red
+    jr $ra
+
+
+
+
+
+
+
+# display mushrooms
+disp_mashroom:
+    # move stack pointer a work and push ra onto it
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
     
-    
-    addi $a1, $a1, 4	 # increment $a1 by one, to point to the next element in the array
-    addi $a2, $a2, 4
-    addi $a3, $a3, -1	 # decrement $a3 by 1
-    bne $a3, $zero, arr_loop
+    addi $a3, $zero, 10	 # load a3 with the loop count (10)
+    la $a1, mushroomLocation # load the address of the array into $a1
+
+    mashroom_loop:	#iterate over the loops elements to draw each body in the centiped
+        lw $t1, 0($a1)		 # load a word from the centipedLocation array into $t1
+
+        lw $t2, displayAddress  # $t2 stores the base address for display
+        la $t3, mushroomColor	
+        lw $t3, ($t3)    # $t3 stores the mushroom colour code
+        
+        sll $t4, $t1, 2		# $t4 is the offset mushroom location in memory (offset*4)
+        add $t4, $t2, $t4	# $t4 is the address of the mushroom pixel
+        sw $t3, 0($t4)		# paint the pixel with mushroom color
+        
+        
+        addi $a1, $a1, 4	 # increment $a1 by one, to point to the next element in the array
+        addi $a2, $a2, 4
+        addi $a3, $a3, -1	 # decrement $a3 by 1
+        bne $a3, $zero, arr_loop
     
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
     addi $sp, $sp, 4
     
     jr $ra
+
+
+
+
+
+
+
+
 
 # function to detect any keystroke
 check_keystroke:
@@ -221,8 +311,8 @@ delay:
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
-    la $a1, sleep
-    lw $a0, ($a1)
+    la $t7, sleep
+    lw $a0, ($t7)
     li $v0, 32
     syscall
 
