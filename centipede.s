@@ -32,7 +32,7 @@
     bugLocation: .word 814  # initial position of the bug
     centipedLocation: .word 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
     centipedDirection: .word 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-    mushroomLocation: .word 31, 69, 80, 451, 731, 756, 761, 760, 955, 962  # some random initial location of mashroom
+    mushroomLocation: .word 69, 115, 180, 234, 317, 428, 451, 537, 646, 760  # some random initial location of mashroom
 
 
     bgColor: .word 0x00000000  # black
