@@ -49,6 +49,7 @@ Loop:
 
     jal disp_centiped
     jal disp_mashroom
+    jal disp_bug
 
     jal check_keystroke
 
@@ -60,6 +61,7 @@ Loop:
 Exit:
     li $v0, 10		# terminate the program gracefully
     syscall
+
 
 
 
@@ -92,7 +94,6 @@ clear_screen:
     addi $sp, $sp, 4
     
     jr $ra
-
 
 
 
@@ -135,8 +136,6 @@ disp_centiped:
 
 
 
-
-
 # display mushrooms
 disp_mashroom:
     # move stack pointer a work and push ra onto it
@@ -168,6 +167,36 @@ disp_mashroom:
     addi $sp, $sp, 4
     
     jr $ra
+
+
+
+
+
+# display Bug Blaster
+disp_bug:
+    # move stack pointer a work and push ra onto it
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+
+    la $t1, bugLocation
+    lw $t1, ($t1)  # load the bug blaster location in $t1
+
+    la $t2, bugColor
+    lw $t2, ($t2)  # load bug blaster color
+
+    lw $t3, displayAddress
+
+    sll $t4, $t1, 2		# calculate the offset amount in $t4
+    add $t4, $t3, $t4	# $t4 is the address of the bug blaster pixel
+    sw $t2, 0($t4)		# paint the pixel with bug blaster color
+
+
+    # pop a word off the stack and move the stack pointer
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    
+    jr $ra
+
 
 
 
