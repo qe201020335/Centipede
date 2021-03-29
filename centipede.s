@@ -48,7 +48,7 @@ Loop:
     jal clear_screen
 
     jal disp_centiped
-
+    jal disp_mashroom
 
     jal check_keystroke
 
@@ -161,7 +161,7 @@ disp_mashroom:
         addi $a1, $a1, 4	 # increment $a1 by one, to point to the next element in the array
         addi $a2, $a2, 4
         addi $a3, $a3, -1	 # decrement $a3 by 1
-        bne $a3, $zero, arr_loop
+        bne $a3, $zero, mashroom_loop
     
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
