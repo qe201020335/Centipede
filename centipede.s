@@ -70,7 +70,7 @@ Exit:
 
 # function to clear the screen for a new iteration of the game
 clear_screen:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
@@ -103,7 +103,7 @@ clear_screen:
 
 # function to display a static centiped	
 disp_centiped:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
@@ -137,7 +137,7 @@ disp_centiped:
 
 # display mushrooms
 disp_mashroom:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
@@ -171,7 +171,7 @@ disp_mashroom:
 
 # display Bug Blaster
 disp_bug:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
 
@@ -199,7 +199,7 @@ disp_bug:
 
 # move each section of the centipede
 move_centipede:
-     # move stack pointer a work and push ra onto it
+     # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
 
@@ -293,7 +293,7 @@ move_centipede:
 
 # function to detect any keystroke
 check_keystroke:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
@@ -313,7 +313,7 @@ check_keystroke:
 
 # function to get the input key
 get_keyboard_input:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
@@ -336,7 +336,7 @@ get_keyboard_input:
 
 # Call back function of j key
 respond_to_j:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
@@ -361,7 +361,7 @@ respond_to_j:
 
 # Call back function of k key
 respond_to_k:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
@@ -384,13 +384,19 @@ respond_to_k:
 
 
 
+# shoot a dart
 respond_to_x:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
     addi $v0, $zero, 3
     
+    # loop to draw the dart
+
+
+
+
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
     addi $sp, $sp, 4
@@ -402,7 +408,7 @@ respond_to_x:
 
 
 respond_to_s:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
@@ -419,7 +425,7 @@ respond_to_s:
 
 
 delay:
-    # move stack pointer a work and push ra onto it
+    # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
