@@ -214,7 +214,30 @@ move_centipede:
         lw $t2, 0($a2)		 # load a word from the centipedDirection array into $t2
         
         add $t1, $t1, $t2    # update the location by it's direction
-        sw $t1, 0($a1)       # store the location
+        
+        # check whether the new position is a mushroom
+        lw $t3, displayAddress
+        sll $t4, $t1, 2		# calculate the offset amount
+        add $t4, $t3, $t4	# $t4 is the address of the desired pixel 
+
+        lw $t4, ($t4)       # color of this pixel
+        
+        la $t5, mushroomColor
+        lw $t5, ($t5)       # color of a mushroom
+        
+        bne $t5, $t4, save_new_pos_n_dir  # brach if it is not a mushroom
+            # hit a mushroom, reposition to move down
+            lw $t1, 0($a1)          # reload the original position
+            addi $t1, $t1, 32       # move down
+            addi $t6, $zero, -1     # stores -1 in $t6
+            mult	$t2, $t6			# reverse the direction of this centipede
+            mflo	$t2					# copy Lo to $t2
+        
+        
+        
+        save_new_pos_n_dir:
+            sw $t1, 0($a1)       # store the new location
+            sw $t2, 0($a2)       # store the new direction
                 
         addi $a1, $a1, 4	 # increment $a1 by one, to point to the next element in the array
         addi $a2, $a2, 4
