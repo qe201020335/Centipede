@@ -29,10 +29,12 @@
 
 .data
     displayAddress:	.word 0x10008000
-    bugLocation: .word 814  # initial position of the bug
+    bugLocation: .word 943  # initial position of the bug
     centipedLocation: .word 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
     centipedDirection: .word 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     mushroomLocation: .word 69, 115, 180, 234, 317, 428, 451, 537, 646, 760  # some random initial location of mashroom
+    fleaLocation: .word 720    # initial flea location
+
 
 
     bgColor: .word 0x00000000  # black
@@ -40,6 +42,7 @@
     bugColor: .word 0x00ffffff  # white
     mushroomColor: .word 0x00f600ff  # pink
     dartColor: .word 0x00afafaf  # grey
+    fleaColor: .word 0x0000ff00  # green
 
     sleep: .word 200  # delay for each game loop iteration
 
@@ -52,6 +55,7 @@ Loop:
     jal disp_bug
 
     jal move_centipede
+    jal move_flea
 
     jal check_keystroke
 
@@ -281,6 +285,72 @@ move_centipede:
         addi $a3, $a3, -1	 # decrement $a3 by 1
         bne $a3, $zero, move_centiped_loop
 
+    # pop a word off the stack and move the stack pointer
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    
+    jr $ra
+
+
+
+
+
+# move the flea
+move_flea:
+    # move stack pointer a word and push ra onto it
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+
+    la $t0, fleaLocation
+    lw $t1, ($t0)  # load the flea location in $t1
+
+    la $t2, fleaColor
+    lw $t2, ($t2)  # load flea color
+
+    lw $t3, displayAddress
+
+    sll $t4, $t1, 2		# calculate the offset amount in $t4
+    add $t4, $t3, $t4	# $t4 is the address of the bug blaster pixel
+    sw $t2, 0($t4)		# paint the pixel with bug blaster color
+
+    # Then update the flea location
+    # generate a new random int first 
+    li $v0, 42
+    li $a0, 0
+    li $a1, 4   # get a random int 1-3
+    syscall
+
+    beq $a0, 0, flea_move_up
+    beq $a0, 1, flea_move_down
+    beq $a0, 2, flea_move_left
+    beq $a0, 3, flea_move_right
+
+    flea_move_up:
+        addi $t1, $t1, -32
+        j check_flea
+
+    flea_move_down:
+        addi $t1, $t1, 32
+        j check_flea
+
+    flea_move_left:
+        addi $t1, $t1, -1
+        j check_flea
+
+    flea_move_right:
+        addi $t1, $t1, 1
+
+    check_flea:
+        # check whether the new location is valid
+        blt $t1, $zero, restore_flea
+        bgt	$t1, 1023, restore_flea       
+        j save_flea
+
+    restore_flea:
+        lw $t1, ($t0)  # reload the flea location in $t1
+    save_flea:
+        sw $t1, ($t0)  # store the new flea location
+    
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
     addi $sp, $sp, 4
