@@ -13,7 +13,7 @@
 #
 # Which milestone is reached in this submission?
 # (See the project handout for descriptions of the milestones)
-# - Milestone 1
+# - Milestone 2
 #
 # Which approved additional features have been implemented?
 # (See the project handout for the list of additional features)
