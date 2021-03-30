@@ -110,16 +110,16 @@ disp_centiped:
     addi $a3, $zero, 10	 # load a3 with the loop count (10)
     la $a1, centipedLocation # load the address of the array into $a1
 
+    lw $t2, displayAddress  # $t2 stores the base address for display
+    la $t3, centipedColor	
+    lw $t3, ($t3)           # $t3 stores the centipede colour code
+
     disp_centiped_loop:	#iterate over the loops elements to draw each body in the centiped
         lw $t1, 0($a1)		 # load a word from the centipedLocation array into $t1
 
-        lw $t2, displayAddress  # $t2 stores the base address for display
-        li $t3, 0xff0000	# $t3 stores the red colour code
-        
         sll $t4,$t1, 2		# $t4 is the bias of the old body location in memory (offset*4)
         add $t4, $t2, $t4	# $t4 is the address of the old bug location
-        sw $t3, 0($t4)		# paint the body with red
-        
+        sw $t3, 0($t4)		# paint the body 
         
         addi $a1, $a1, 4	 # increment $a1 by one, to point to the next element in the array
         addi $a3, $a3, -1	 # decrement $a3 by 1
@@ -144,20 +144,18 @@ disp_mashroom:
     addi $a3, $zero, 10	 # load a3 with the loop count (10)
     la $a1, mushroomLocation # load the address of the array into $a1
 
-    mashroom_loop:	#iterate over the loops elements to draw each body in the centiped
-        lw $t1, 0($a1)		 # load a word from the centipedLocation array into $t1
+    lw $t2, displayAddress  # $t2 stores the base address for display
+    la $t3, mushroomColor	
+    lw $t3, ($t3)    # $t3 stores the mushroom colour code
 
-        lw $t2, displayAddress  # $t2 stores the base address for display
-        la $t3, mushroomColor	
-        lw $t3, ($t3)    # $t3 stores the mushroom colour code
-        
+    mashroom_loop:	#iterate over the loops elements to draw each body in the centiped
+        lw $t1, 0($a1)		 # load a word from the mushroomLocation array into $t1
+
         sll $t4, $t1, 2		# $t4 is the offset mushroom location in memory (offset*4)
         add $t4, $t2, $t4	# $t4 is the address of the mushroom pixel
         sw $t3, 0($t4)		# paint the pixel with mushroom color
         
-        
         addi $a1, $a1, 4	 # increment $a1 by one, to point to the next element in the array
-        addi $a2, $a2, 4
         addi $a3, $a3, -1	 # decrement $a3 by 1
         bne $a3, $zero, mashroom_loop
     
