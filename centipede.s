@@ -308,7 +308,11 @@ check_keystroke:
     addi $sp, $sp, 4
     
     jr $ra
-    
+
+
+
+
+
 # function to get the input key
 get_keyboard_input:
     # move stack pointer a work and push ra onto it
@@ -327,7 +331,11 @@ get_keyboard_input:
     addi $sp, $sp, 4
     
     jr $ra
-    
+
+
+
+
+
 # Call back function of j key
 respond_to_j:
     # move stack pointer a work and push ra onto it
@@ -337,30 +345,21 @@ respond_to_j:
     la $t0, bugLocation	# load the address of buglocation from memory
     lw $t1, 0($t0)		# load the bug location itself in t1
     
-    lw $t2, displayAddress  # $t2 stores the base address for display
-    li $t3, 0x000000	# $t3 stores the black colour code
-    
-    sll $t4,$t1, 2		# $t4 the bias of the old buglocation
-    add $t4, $t2, $t4	# $t4 is the address of the old bug location
-    sw $t3, 0($t4)		# paint the first (top-left) unit white.
-    
     beq $t1, 800, skip_movement_j # prevent the bug from getting out of the canvas
     addi $t1, $t1, -1	# move the bug one location to the right
-skip_movement_j:
-    sw $t1, 0($t0)		# save the bug location
-
-    li $t3, 0xffffff	# $t3 stores the white colour code
     
-    sll $t4,$t1, 2
-    add $t4, $t2, $t4
-    sw $t3, 0($t4)		# paint the first (top-left) unit white.
-    
-    
+    skip_movement_j:
+        sw $t1, 0($t0)		# save the bug location       
+        
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
     addi $sp, $sp, 4
     
     jr $ra
+
+
+
+
 
 # Call back function of k key
 respond_to_k:
@@ -371,31 +370,22 @@ respond_to_k:
     la $t0, bugLocation	# load the address of buglocation from memory
     lw $t1, 0($t0)		# load the bug location itself in t1
     
-    lw $t2, displayAddress  # $t2 stores the base address for display
-    li $t3, 0x000000	# $t3 stores the black colour code
-    
-    sll $t4,$t1, 2		# $t4 the bias of the old buglocation
-    add $t4, $t2, $t4	# $t4 is the address of the old bug location
-    sw $t3, 0($t4)		# paint the block with black
-    
     beq $t1, 831, skip_movement_k #prevent the bug from getting out of the canvas
     addi $t1, $t1, 1	# move the bug one location to the right
-skip_movement_k:
-    sw $t1, 0($t0)		# save the bug location
 
-    li $t3, 0xffffff	# $t3 stores the white colour code
-    
-    sll $t4,$t1, 2
-    add $t4, $t2, $t4
-    sw $t3, 0($t4)		# paint the block with white
-    
+    skip_movement_k:
+        sw $t1, 0($t0)		# save the bug location    
     
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
     addi $sp, $sp, 4
     
     jr $ra
-    
+
+
+
+
+
 respond_to_x:
     # move stack pointer a work and push ra onto it
     addi $sp, $sp, -4
@@ -408,7 +398,11 @@ respond_to_x:
     addi $sp, $sp, 4
     
     jr $ra
-    
+
+
+
+
+
 respond_to_s:
     # move stack pointer a work and push ra onto it
     addi $sp, $sp, -4
@@ -421,6 +415,10 @@ respond_to_s:
     addi $sp, $sp, 4
     
     jr $ra
+
+
+
+
 
 delay:
     # move stack pointer a work and push ra onto it
