@@ -214,7 +214,32 @@ move_centipede:
         lw $t2, 0($a2)		 # load a word from the centipedDirection array into $t2
         
         add $t1, $t1, $t2    # update the location by it's direction
-        
+
+        # check whether the centipede hit the wall 
+        addi $t3, $zero, -1      # stores -1 in $t3
+        addi $t4, $zero, 32      # store 32 in $t4
+
+        beq $t3, $t2, going_left     # branch if it is going left i.e. direction = -1
+            # it's going right
+            
+            div		$t1, $t4         # $t1 / $t4
+            mfhi	$t5	             # $t3 = $t1 mod $t1 
+            
+            beq $t5, $zero, hit_something    # it is at the right edge, need to move down
+
+            j check_mushroom      # it is not hitting a wall, continue on checking mushroom 
+        going_left:
+            # it's going left
+
+            div		$t1, $t4         # $t1 / $t4
+            mfhi	$t5	             # $t3 = $t1 mod $t1 
+            addi    $t6, $zero, 31   # store 31 in $t6
+
+            beq $t5, $t6, hit_something    # it is at the left edge, need to move down
+
+
+
+        check_mushroom:
         # check whether the new position is a mushroom
         lw $t3, displayAddress
         sll $t4, $t1, 2		# calculate the offset amount
@@ -227,6 +252,7 @@ move_centipede:
         
         bne $t5, $t4, save_new_pos_n_dir  # brach if it is not a mushroom
             # hit a mushroom, reposition to move down
+        hit_something:
             lw $t1, 0($a1)          # reload the original position
             addi $t1, $t1, 32       # move down
             addi $t6, $zero, -1     # stores -1 in $t6
@@ -236,6 +262,19 @@ move_centipede:
         
         
         save_new_pos_n_dir:
+
+            # check whether it hits the bag buster
+            lw $t3, displayAddress
+            sll $t4, $t1, 2		# calculate the offset amount
+            add $t4, $t3, $t4	# $t4 is the address of the desired pixel 
+
+            lw $t4, ($t4)       # color of this pixel
+            
+            la $t5, bugColor
+            lw $t5, ($t5)       # color of the bug buster
+            
+            beq $t5, $t4, Exit  # brach if it hits the buster, and game over
+
             sw $t1, 0($a1)       # store the new location
             sw $t2, 0($a2)       # store the new direction
                 
