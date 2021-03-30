@@ -51,6 +51,8 @@ Loop:
     jal disp_mashroom
     jal disp_bug
 
+    jal move_centipede
+
     jal check_keystroke
 
 
@@ -107,12 +109,10 @@ disp_centiped:
     
     addi $a3, $zero, 10	 # load a3 with the loop count (10)
     la $a1, centipedLocation # load the address of the array into $a1
-    la $a2, centipedDirection # load the address of the array into $a2
 
-    arr_loop:	#iterate over the loops elements to draw each body in the centiped
+    disp_centiped_loop:	#iterate over the loops elements to draw each body in the centiped
         lw $t1, 0($a1)		 # load a word from the centipedLocation array into $t1
-        lw $t5, 0($a2)		 # load a word from the centipedDirection  array into $t5
-        #####
+
         lw $t2, displayAddress  # $t2 stores the base address for display
         li $t3, 0xff0000	# $t3 stores the red colour code
         
@@ -122,9 +122,8 @@ disp_centiped:
         
         
         addi $a1, $a1, 4	 # increment $a1 by one, to point to the next element in the array
-        addi $a2, $a2, 4
         addi $a3, $a3, -1	 # decrement $a3 by 1
-        bne $a3, $zero, arr_loop
+        bne $a3, $zero, disp_centiped_loop
         
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
@@ -200,7 +199,33 @@ disp_bug:
 
 
 
+# move each section of the centipede
+move_centipede:
+     # move stack pointer a work and push ra onto it
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
 
+    addi $a3, $zero, 10	 # load a3 with the loop count (10)
+    la $a1, centipedLocation # load the address of the array into $a1
+    la $a2, centipedDirection # load the address of the array into $a2
+
+    move_centiped_loop:	#iterate over the loops elements to update location of each body in the centiped
+        lw $t1, 0($a1)		 # load a word from the centipedLocation array into $t1
+        lw $t2, 0($a2)		 # load a word from the centipedDirection array into $t2
+        
+        add $t1, $t1, $t2    # update the location by it's direction
+        sw $t1, 0($a1)       # store the location
+                
+        addi $a1, $a1, 4	 # increment $a1 by one, to point to the next element in the array
+        addi $a2, $a2, 4
+        addi $a3, $a3, -1	 # decrement $a3 by 1
+        bne $a3, $zero, move_centiped_loop
+
+    # pop a word off the stack and move the stack pointer
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    
+    jr $ra
 
 
 
