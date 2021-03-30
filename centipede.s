@@ -392,11 +392,23 @@ respond_to_x:
     
     addi $v0, $zero, 3
     
+    addi $t0, $zero, 32   # store 32 in $t0
+    la $t1, bugLocation
+    lw $t1, ($t1)      # store bug buster location in $t1
+    la $t2, dartColor
+    lw $t2, ($t2)  # load bug dart color
+    lw $t3, displayAddress
+
     # loop to draw the dart
+    draw_dart_loop:
+        addi $t1, $t1, -32    # dart flying up
 
+        sll $t4, $t1, 2		# calculate the offset amount in $t4
+        add $t4, $t3, $t4	# $t4 is the address of the bug blaster pixel
+        sw $t2, 0($t4)		# paint the pixel with bug blaster color
 
-
-
+        bge $t1, $t0, draw_dart_loop    # keep looping while $t1 >= 32
+        
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
     addi $sp, $sp, 4
