@@ -243,16 +243,16 @@ move_centipede:
 
         check_mushroom:
         # check whether the new position is a mushroom
-        lw $t3, displayAddress
-        sll $t4, $t1, 2		# calculate the offset amount
-        add $t4, $t3, $t4	# $t4 is the address of the desired pixel 
+            lw $t3, displayAddress
+            sll $t4, $t1, 2		# calculate the offset amount
+            add $t4, $t3, $t4	# $t4 is the address of the desired pixel 
 
-        lw $t4, ($t4)       # color of this pixel
+            lw $t4, ($t4)       # color of this pixel
+            
+            la $t5, mushroomColor
+            lw $t5, ($t5)       # color of a mushroom
         
-        la $t5, mushroomColor
-        lw $t5, ($t5)       # color of a mushroom
-        
-        bne $t5, $t4, save_new_pos_n_dir  # brach if it is not a mushroom
+            bne $t5, $t4, save_new_pos_n_dir  # brach if it is not a mushroom
             # hit a mushroom, reposition to move down
         hit_something:
             lw $t1, 0($a1)          # reload the original position
