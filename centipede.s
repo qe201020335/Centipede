@@ -35,14 +35,14 @@
     mushroomLocation: .word 69, 115, 180, 234, 317, 428, 451, 537, 646, 760  # some random initial location of mashroom
     fleaLocation: .word 720    # initial flea location
 
-
-
     bgColor: .word 0x00000000  # black
     centipedColor: .word 0x00ff0000  # red
     bugColor: .word 0x00ffffff  # white
     mushroomColor: .word 0x00f600ff  # pink
     dartColor: .word 0x00afafaf  # grey
     fleaColor: .word 0x0000ff00  # green
+
+    hit_times: .word 0   # how many times the centipede has been hit
 
     sleep: .word 200  # delay for each game loop iteration
 
@@ -513,11 +513,32 @@ respond_to_x:
         addi $t1, $t1, -32    # dart flying up
 
         sll $t4, $t1, 2		# calculate the offset amount in $t4
-        add $t4, $t3, $t4	# $t4 is the address of the bug blaster pixel
+        add $t4, $t3, $t4	# $t4 is the address of the dart next pixel
+
+        lw $t6, ($t4)    # load the color at this position
+
+        la $t5, centipedColor
+        lw $t5, ($t5)  # load centipede color
+
+        la $t7, hit_times
+        lw $t8, ($t7)  # $t8 is hit times
+
+        addi $t9, $zero, 3   # store 3 in $t9
+
+        bne	$t5, $t6, not_hit    # if $t5 != $t6 i.e not a hit!
+            addi $t8, $t8, 1   # increment hit time
+            sw $t8, ($t7)      # store it back
+
+            beq $t8, $t9, centipedDie    # hit 3 times, centipede dies
+
+            j dart_done   # it hits, so won't fly anymore
+
+        not_hit:
         sw $t2, 0($t4)		# paint the pixel with bug blaster color
 
         bge $t1, $t0, draw_dart_loop    # keep looping while $t1 >= 32
-        
+
+    dart_done:    
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
     addi $sp, $sp, 4
@@ -541,6 +562,31 @@ respond_to_s:
     
     jr $ra
 
+
+
+
+
+# centipede dies
+centipedDie:
+    # move stack pointer a word and push ra onto it
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+    
+    la $t0, bgColor
+    lw $t0, ($t0)  # store bgcolor in $t0
+
+    la $t1, centipedColor
+    sw $t0, ($t1)   # change centipede color to bg color
+
+    jal disp_centiped   # redraw the centipede i.e remove it
+
+    j Exit  # stop the program
+    
+    # pop a word off the stack and move the stack pointer
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    
+    jr $ra
 
 
 
