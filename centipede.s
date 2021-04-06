@@ -317,7 +317,7 @@ move_flea:
     # generate a new random int first 
     li $v0, 42
     li $a0, 0
-    li $a1, 4   # get a random int 1-3
+    li $a1, 4   # get a random int 0-3
     syscall
 
     beq $a0, 0, flea_move_up
