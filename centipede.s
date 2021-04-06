@@ -47,6 +47,8 @@
     sleep: .word 200  # delay for each game loop iteration
 
 .text 
+jal generate_mushroom
+
 Loop:
     jal clear_screen
 
@@ -72,13 +74,50 @@ Exit:
 
 
 
+# generate mushroom position
+generate_mushroom:
+    # move stack pointer a word and push ra onto it
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+
+
+    li $v0, 42
+    li $a1, 928   # get a random int 0-928
+
+    addi $a3, $zero, 10   # load a3 with the loop count (10)
+    la $a2, mushroomLocation # load the address of the array into $a2
+
+    gen_mush_loop:
+        li $a0, 0
+        syscall
+
+        li $t1, 16     # $t1 = 16 
+        blt $a0, $t1, gen_mush_loop	# if $t0 < 16 then continue to next iteration
+
+        sw $a0, 0($a2)		 # store $a0 (ramdom number) in mushroomLocation array 
+        
+        addi $a2, $a2, 4	 # increment $a1 by one, to point to the next element in the array
+        addi $a3, $a3, -1	 # decrement $a3 by 1
+        
+        bne $a3, $zero, gen_mush_loop
+
+    # pop a word off the stack and move the stack pointer
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    
+    jr $ra
+
+
+
+
+
 # function to clear the screen for a new iteration of the game
 clear_screen:
     # move stack pointer a word and push ra onto it
     addi $sp, $sp, -4
     sw $ra, 0($sp)
     
-    addi $a3, $zero, 1024	 # load a3 with the loop count (10)
+    addi $a3, $zero, 1024	 # load a3 with the loop count (1024)
     la $a1, mushroomLocation # load the address of the array into $a1
 
     clear_screen_loop:  # loop over the whole screen and draw every pixel with bgColor
@@ -310,8 +349,8 @@ move_flea:
     lw $t3, displayAddress
 
     sll $t4, $t1, 2		# calculate the offset amount in $t4
-    add $t4, $t3, $t4	# $t4 is the address of the bug blaster pixel
-    sw $t2, 0($t4)		# paint the pixel with bug blaster color
+    add $t4, $t3, $t4	# $t4 is the address of the flea pixel
+    sw $t2, 0($t4)		# paint the pixel with flea color
 
     # Then update the flea location
     # generate a new random int first 
