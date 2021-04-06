@@ -92,7 +92,7 @@ generate_mushroom:
         syscall
 
         li $t1, 16     # $t1 = 16 
-        blt $a0, $t1, gen_mush_loop	# if $t0 < 16 then continue to next iteration
+        blt $a0, $t1, gen_mush_loop	# if $t0 < 16 then continue to next iteration i.e mushroom should not be in the initial position of centipede
 
         sw $a0, 0($a2)		 # store $a0 (ramdom number) in mushroomLocation array 
         
