@@ -42,11 +42,14 @@
     dartColor: .word 0x00afafaf  # grey
     fleaColor: .word 0x0000ff00  # green
 
+    retry_string: .asciiz "\nG A M E  O V E R\nDo you want to retry?\n"
+
     hit_times: .word 0   # how many times the centipede has been hit
 
-    sleep: .word 200  # delay for each game loop iteration
+    sleep: .word 100  # delay for each game loop iteration
 
 .text 
+start:
 jal generate_mushroom
 
 Loop:
@@ -314,7 +317,7 @@ move_centipede:
             la $t5, bugColor
             lw $t5, ($t5)       # color of the bug buster
             
-            beq $t5, $t4, Exit  # brach if it hits the buster, and game over
+            beq $t5, $t4, gameOver  # brach if it hits the buster, and game over
 
             sw $t1, 0($a1)       # store the new location
             sw $t2, 0($a2)       # store the new direction
@@ -388,6 +391,12 @@ move_flea:
     restore_flea:
         lw $t1, ($t0)  # reload the flea location in $t1
     save_flea:
+
+        la $t2, bugLocation
+        lw $t2, ($t2)  # load the bug location in $t2
+
+        beq $t2, $t1, gameOver  # flea hits bug, game over
+
         sw $t1, ($t0)  # store the new flea location
     
     # pop a word off the stack and move the stack pointer
@@ -601,6 +610,63 @@ delay:
     li $v0, 32
     syscall
 
+    # pop a word off the stack and move the stack pointer
+    lw $ra, 0($sp)
+    addi $sp, $sp, 4
+    
+    jr $ra
+
+
+
+
+
+# handle game over
+gameOver:
+    la $a0, retry_string
+    li $v0, 50
+    syscall   # ConfirmDialog
+
+    beq $a0, $zero, choose_retry   # choose yes, so retry
+        j Exit  # didn't choose yes 
+
+    choose_retry:
+        jal restore
+        j start
+
+
+
+
+
+# Restore the initial values
+restore:
+# move stack pointer a word and push ra onto it
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)
+    
+    # first restore centipede
+    addi $a3, $zero, 0	 # load a3 with 0
+    addi $t0, $zero, 10
+    addi $t1, $zero, 1
+
+    la $a1, centipedLocation # load the address of the array into $a1
+    la $a2, centipedDirection  # $t2 stores the  address for centipedDirection
+
+    restore_centiped_loop:	#iterate over the loops elements to draw each body in the centiped
+        sw $a3, 0($a1)		 # load a word from the centipedLocation array into $t1
+        sw $t1, 0($a2)
+        
+        addi $a1, $a1, 4	 # increment $a1 by 4, to point to the next element in the array
+        addi $a2, $a2, 4     # increment $a2 by 4, to point to the next element in the array
+
+        addi $a3, $a3, 1	 # increment $a3 by 1
+        bne $a3, $t0, restore_centiped_loop
+
+    
+    # then restore hit_times
+    la $t3, hit_times
+    sw $zero, ($t3)
+
+        
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
     addi $sp, $sp, 4
