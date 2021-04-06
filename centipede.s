@@ -42,7 +42,8 @@
     dartColor: .word 0x00afafaf  # grey
     fleaColor: .word 0x0000ff00  # green
 
-    retry_string: .asciiz "\nG A M E  O V E R\nDo you want to retry?\n"
+    lose_string: .asciiz "\nG A M E  O V E R\nDo you want to retry?\n"
+    win_string: .asciiz "\n Y O U  W I N\nDo you want to play again?\n"
 
     hit_times: .word 0   # how many times the centipede has been hit
 
@@ -589,7 +590,7 @@ centipedDie:
 
     jal disp_centiped   # redraw the centipede i.e remove it
 
-    j Exit  # stop the program
+    j gameWin  # win
     
     # pop a word off the stack and move the stack pointer
     lw $ra, 0($sp)
@@ -619,14 +620,23 @@ delay:
 
 
 
-
-# handle game over
-gameOver:
-    la $a0, retry_string
+gameWin:
+    la $a0, win_string
     li $v0, 50
     syscall   # ConfirmDialog
 
+    j choose
+
+
+# handle game over
+gameOver:
+    la $a0, lose_string
+    li $v0, 50
+    syscall   # ConfirmDialog
+
+    choose:
     beq $a0, $zero, choose_retry   # choose yes, so retry
+        jal clear_screen
         j Exit  # didn't choose yes 
 
     choose_retry:
@@ -662,9 +672,13 @@ restore:
         bne $a3, $t0, restore_centiped_loop
 
     
-    # then restore hit_times
+    # then restore hit_times and centipede color
     la $t3, hit_times
     sw $zero, ($t3)
+
+    la $t4, centipedColor
+    li $t5, 0x00ff0000
+    sw $t5, ($t4)
 
         
     # pop a word off the stack and move the stack pointer
